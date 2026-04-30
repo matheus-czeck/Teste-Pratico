@@ -5,7 +5,7 @@ const routes = express.Router();
 
 routes
   .get("/pedidos", PedidosController.listarPedidos)
-  .post("/cadastrarPedido", PedidosController.cadastarNovoPedido)
+  .post("/criarPedido", PedidosController.criarPedido)
   .put("/alterarPedido", PedidosController.alterarPedido)
   .delete("/deletarPedido", PedidosController.deletarPedido);
 

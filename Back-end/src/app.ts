@@ -1,9 +1,9 @@
 import express, {Request, Response} from 'express';
+import routes from './routes/index';
 
-const app = express();
-app.use(express.json());
-const routes = (app)=>{
-    app.routes
-}
+const app = express()
+
+routes(app)
+
 
 export default app;
