@@ -3,32 +3,58 @@ import prisma from "../config/db";
 
 class PedidosController {
   static async listarPedidos(req: Request, res: Response) {
-    const listaPedidos = await prisma.pedido.findMany({
-      include: { produtos: true },
-    });
-
-    if (listaPedidos !== null) {
-      res.status(200).json(listaPedidos);
-    } else {
-      res.send({
-        message: "Nenhum pedido foi encontrado",
-        status: 404,
+    try {
+      const listaPedidos = await prisma.pedido.findMany({
+        include: { produtos: true },
       });
+
+      if (listaPedidos.length === 0) {
+        return res
+          .status(404)
+          .json("Pedido nao encontrado");
+      } else {
+        res.status(200).json(listaPedidos);
+      }
+    } catch (error) {
+      res.status(500).json(`Ocorreu um erro interno: ${error}`);
     }
   }
 
   static async criarPedido(req: Request, res: Response) {
-    const { nome, numero, produtos } = req.body;
+    const { nome, produtos } = req.body;
 
-    if (isNaN(numero) || !nome || !Array.isArray(produtos)) {
-      return res.status(400).send("Dados enviado estao no formato errado.");
+    if (!nome || !Array.isArray(produtos)) {
+      return res.status(400).json("Dados invalidos!");
     }
 
     try {
-      const novoPedido = await prisma.pedido.create({
+      if (produtos.length > 5 || produtos.length < 1) {
+        return res.status(400).json("Quantidade de itens invalido");
+      }
+
+      let produtosEncontrados = await prisma.produto.findMany({
+        where: {
+          id: {
+            in: produtos,
+          },
+        },
+      });
+      const valorProdutos = produtosEncontrados.reduce(
+        (total, produto) => total + produto.preco,
+        0,
+      );
+
+      if (valorProdutos > 1000) {
+        return res
+          .status(200)
+          .json(
+            `A soma de itens nao podem ultrapassar R$:1000,00. Total: ${valorProdutos}`,
+          );
+      }
+
+      await prisma.pedido.create({
         data: {
           nome,
-          numero,
           produtos: {
             create: produtos.map((id) => ({
               produto: {
@@ -38,13 +64,12 @@ class PedidosController {
           },
         },
       });
+      res.status(201).json("Pedido criado com sucesso");
+    } catch (error) {
       res.send({
-        status: 201,
-        json: novoPedido,
-        message: "Pedido criado com sucesso!",
+        status: 500,
+        message: `Ocorreu um erro interno: ${error}`,
       });
-    } catch (erro) {
-      res.status(500).send("Ocorreu um erro interno");
     }
   }
 
@@ -52,7 +77,7 @@ class PedidosController {
     const id = Number(req.params.id);
 
     if (isNaN(id)) {
-      res.status(400).send("id invalido");
+      return res.status(400).json("Id invalido!");
     }
 
     try {
@@ -63,13 +88,9 @@ class PedidosController {
       await prisma.pedido.delete({
         where: { id },
       });
-
-      res.send({
-        message: "Pedido deletado com sucesso",
-        status: 200,
-      });
+      res.status(200).json("Pedido deletado com sucesso");
     } catch (error) {
-      res.status(500).send("Ocorreu um erro interno");
+      res.status(500).json(`Ocorreu um erro interno: ${error}`);
     }
   }
 }

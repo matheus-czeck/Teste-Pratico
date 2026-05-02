@@ -9,7 +9,6 @@ generator client {
 
   model Pedido {
     id Int @id @default(autoincrement())
-    numero Int 
     nome String
     produtos PedidoProduto[]
   }

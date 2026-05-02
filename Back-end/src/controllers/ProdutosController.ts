@@ -6,19 +6,13 @@ export class ProdutosController {
     try {
       const todosProdutos = await prisma.produto.findMany();
 
-      if (todosProdutos !== null) {
-        res.send({
-          send: todosProdutos,
-          status: 200,
-        });
+      if (todosProdutos.length !== 0) {
+        res.status(200).json(todosProdutos);
       } else {
-        res.send({
-          message: "Não há produtos cadastrados!",
-          status: 400,
-        });
+        return res.status(404).json("Nao ha produtos cadastrados!");
       }
-    } catch (err) {
-      res.send(`Aconteceu um erro interno: ${err}`);
+    } catch (error) {
+      res.status(500).json(`Ocorreu um erro interno: ${error}`);
     }
   }
 }
