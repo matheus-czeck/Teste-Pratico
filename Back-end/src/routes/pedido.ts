@@ -5,9 +5,7 @@ const routes = express.Router();
 
 routes
   .get("/pedidos", PedidosController.listarPedidos)
-  .post("/criarPedido", PedidosController.criarPedido)
-  .put("/alterarPedido", PedidosController.alterarPedido)
-  .delete("/deletarPedido", PedidosController.deletarPedido);
+  .delete("/deletarPedido/:id", PedidosController.deletarPedido)
+  .post("/criarPedido", PedidosController.criarPedido);
 
-
-  export default routes;
+export default routes;

@@ -8,7 +8,7 @@ export class ProdutosController {
 
       if (todosProdutos !== null) {
         res.send({
-          json: todosProdutos,
+          send: todosProdutos,
           status: 200,
         });
       } else {

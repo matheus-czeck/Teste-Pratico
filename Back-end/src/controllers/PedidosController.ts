@@ -3,10 +3,12 @@ import prisma from "../config/db";
 
 class PedidosController {
   static async listarPedidos(req: Request, res: Response) {
-    const listaPedidos = await prisma.pedido.findMany();
+    const listaPedidos = await prisma.pedido.findMany({
+      include: { produtos: true },
+    });
 
     if (listaPedidos !== null) {
-      res.status(200).send(listaPedidos);
+      res.status(200).json(listaPedidos);
     } else {
       res.send({
         message: "Nenhum pedido foi encontrado",
@@ -14,49 +16,60 @@ class PedidosController {
       });
     }
   }
+
   static async criarPedido(req: Request, res: Response) {
-    const pedido = req.params;
+    const { nome, numero, produtos } = req.body;
 
-    const criarPedido = await prisma.pedido.create();
+    if (isNaN(numero) || !nome || !Array.isArray(produtos)) {
+      return res.status(400).send("Dados enviado estao no formato errado.");
+    }
 
-    if (criarPedido) {
+    try {
+      const novoPedido = await prisma.pedido.create({
+        data: {
+          nome,
+          numero,
+          produtos: {
+            create: produtos.map((id) => ({
+              produto: {
+                connect: { id },
+              },
+            })),
+          },
+        },
+      });
       res.send({
-        message: "Pedido criado com sucesso!",
         status: 201,
+        json: novoPedido,
+        message: "Pedido criado com sucesso!",
       });
-    } else {
-      res.send({
-        message: "Algo deu errado ao criar o pedido!",
-        status: 400,
-      });
+    } catch (erro) {
+      res.status(500).send("Ocorreu um erro interno");
     }
   }
-  static async alterarPedido(req: Request, res: Response) {
-    const alterarPedidoId = req.params;
 
-    const pedidoId = await prisma.pedido.findById(alterarPedidoId.id);
+  static async deletarPedido(req: Request, res: Response) {
+    const id = Number(req.params.id);
 
-    const pedidoAlterado = await pedidoId.replace(alterarPedidoId);
+    if (isNaN(id)) {
+      res.status(400).send("id invalido");
+    }
 
-    if (pedidoAlterado) {
+    try {
+      await prisma.pedidoProduto.deleteMany({
+        where: { pedidoId: id },
+      });
+
+      await prisma.pedido.delete({
+        where: { id },
+      });
+
       res.send({
-        message: "Pedido alterado com sucesso!",
+        message: "Pedido deletado com sucesso",
         status: 200,
       });
-    } else {
-      res.send({
-        message: "Algo deu errado ao criar o pedido!",
-        status: 400,
-      });
-    }
-  }
-  static async deletarPedido(req: Request, res: Response) {
-    const deletarPedido = req.params
-
-    const pedidoDeletado =  await prisma.pedido.deleteById(deletarPedido.id);
-  
-    if(pedidoDeletado){
-      res.send({message: })
+    } catch (error) {
+      res.status(500).send("Ocorreu um erro interno");
     }
   }
 }
