@@ -40,7 +40,7 @@ class PedidosController {
         },
       });
       const valorProdutos = produtosEncontrados.reduce(
-        (total, produto) => total + produto.preco,
+        (total:number, produto:any) => total + produto.preco,
         0,
       );
 
