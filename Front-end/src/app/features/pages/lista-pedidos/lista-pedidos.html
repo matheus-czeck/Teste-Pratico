@@ -1,1 +1,81 @@
-<p>lista-pedidos works!</p>
+<div class="container" *ngIf="pedidos$ | async as pedidos; else carregando">
+  <h2>Lista de Pedidos</h2>
+  <div class="card" *ngFor="let pedido of pedidos">
+    <h3>#{{ pedido.id }} - Pedido: {{ pedido.nome }}</h3>
+    <ng-template pTemplate="icons">
+      <button
+        pButton
+        icon="pi pi-trash"
+        class="p-button-danger p-button-text"
+        (click)="excluirPedido(pedido.id)"
+      ></button>
+    </ng-template>
+    <ul>
+      <li *ngFor="let item of pedido.produtos">
+        <div class="produto">
+          {{ item.produto.nome }} - R$ {{ item.produto.preco }}
+          <button
+            pButton
+            icon="pi pi-times"
+            class="p-button-rounded p-button-danger p-button-text p-button-sm"
+            (click)="removerProduto(pedido.id, item.produto.id)"
+          >
+            Remover
+          </button>
+        </div>
+      </li>
+    </ul>
+
+    <div class="footer">
+      <strong> R$:{{ getPedidoTotal(pedido) }}</strong>
+      <p-button
+        label="Item"
+        icon="pi pi-plus"
+        styleClass="p-button-sm p-button-outlined"
+        (click)="abrirModalAdicionar(pedido)"
+      >
+      </p-button>
+    </div>
+  </div>
+</div>
+
+<p-dialog
+  header="Adicionar Produtos"
+  [(visible)]="exibirModal"
+  [modal]="true"
+  [style]="{ width: '50vw' }"
+>
+  <div *ngIf="pedidoSelecionado">
+    <strong>{{ pedidoSelecionado.nome }}</strong>
+    <p-multiSelect
+      [options]="(produtos$ | async) || []"
+      [(ngModel)]="produtoIdSelecionado"
+      optionLabel="nome"
+      optionValue="id"
+      placeholder="Selecione um produto"
+      appendTo="body"
+      class="w-full"
+    >
+    </p-multiSelect>
+
+    <div class="flex justify-content-end mt-4 heigth 300px">
+      <p-button 
+      label="Fechar" 
+      (click)="exibirModal = false" 
+      styleClass="p-button-text">
+      </p-button>
+
+      <p-button 
+      label="Adicionar Produto" 
+      icon="pi pi-check" 
+      (click)="adicionarProdutos()"
+      [disabled]="!produtoIdSelecionado"
+      >
+      </p-button>
+    </div>
+  </div>
+</p-dialog>
+
+<ng-template #carregando>
+  <p>Carregando pedidos...</p>
+</ng-template>

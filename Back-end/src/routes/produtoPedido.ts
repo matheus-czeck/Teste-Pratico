@@ -9,7 +9,7 @@ routes
     ProdutoPedidoController.deletarProdutoPedido,
   )
   .post(
-    "/adiconarProdutoPedido/:id",
+    "/adicionarProdutoPedido/:id",
     ProdutoPedidoController.adicionarProdutoPedido,
   );
 

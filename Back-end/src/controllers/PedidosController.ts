@@ -5,13 +5,17 @@ class PedidosController {
   static async listarPedidos(req: Request, res: Response) {
     try {
       const listaPedidos = await prisma.pedido.findMany({
-        include: { produtos: true },
+        include: {
+          produtos: {
+            include: {
+              produto: true,
+            },
+          },
+        },
       });
 
       if (listaPedidos.length === 0) {
-        return res
-          .status(404)
-          .json("Pedido nao encontrado");
+        return res.status(404).json("Pedido nao encontrado");
       } else {
         res.status(200).json(listaPedidos);
       }
@@ -40,7 +44,7 @@ class PedidosController {
         },
       });
       const valorProdutos = produtosEncontrados.reduce(
-        (total:number, produto:any) => total + produto.preco,
+        (total: number, produto: any) => total + produto.preco,
         0,
       );
 

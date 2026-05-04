@@ -1,1 +1,17 @@
-<p>criar-pedido works!</p>
+<div class="container">
+  <form [formGroup]="formulario" (ngSubmit)="criarPedido()" class="conteudo">
+    <label for="nome">Nome do Pedido</label>
+    <input pInputText id="nome" formControlName="nome" />
+
+    <label>Selecione os Produtos</label>
+    <p-multiSelect
+      [options]="(produtos$ | async) || []"
+      formControlName="produtosSelecionados"
+      optionLabel="nome"
+      optionValue="id"
+      placeholder="Escolha os itens"
+    >
+    </p-multiSelect>
+    <p-button label="Finalizar Pedido" type="submit" [disabled]="formulario.invalid"></p-button>
+  </form>
+</div>

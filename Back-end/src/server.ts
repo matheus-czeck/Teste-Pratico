@@ -2,6 +2,7 @@ import 'dotenv/config'
 import app from "./app";
 import { iniciarBanco } from "./config/db";
 
+
 async function iniciarServidor() {
   await iniciarBanco();
 
