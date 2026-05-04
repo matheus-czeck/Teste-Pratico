@@ -85,6 +85,17 @@ export class ListaPedidos implements OnInit {
       });
     }
   }
+  
+  removerPedido(pedidoId: number){
+    this.pedidosService.deletarPedido(pedidoId).subscribe({
+      next: () => {
+        this.carregarPedidos()
+        alert("Pedido removido com sucesso!")
+      },error: (err)=>{
+        alert(err)
+      }
+    })
+  }
 
   getPedidoTotal(pedido: any): number {
     if (!pedido.produtos) return 0;

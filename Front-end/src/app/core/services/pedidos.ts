@@ -18,7 +18,9 @@ export class Pedidos {
   }
 
   deletarPedido(id: number){
-    return this.http.delete(`${this.api}/deletarPedido/${id}`)
+    return this.http.delete(`${this.api}/deletarPedido/${id}`, {
+      responseType: 'text'
+    })
   }
 
 }

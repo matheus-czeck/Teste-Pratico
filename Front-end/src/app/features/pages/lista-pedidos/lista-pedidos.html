@@ -2,40 +2,41 @@
   <h2>Lista de Pedidos</h2>
   <div class="card" *ngFor="let pedido of pedidos">
     <h3>#{{ pedido.id }} - Pedido: {{ pedido.nome }}</h3>
-    <ng-template pTemplate="icons">
-      <button
-        pButton
-        icon="pi pi-trash"
-        class="p-button-danger p-button-text"
-        (click)="excluirPedido(pedido.id)"
-      ></button>
-    </ng-template>
+    
     <ul>
       <li *ngFor="let item of pedido.produtos">
         <div class="produto">
           {{ item.produto.nome }} - R$ {{ item.produto.preco }}
           <button
-            pButton
-            icon="pi pi-times"
-            class="p-button-rounded p-button-danger p-button-text p-button-sm"
-            (click)="removerProduto(pedido.id, item.produto.id)"
+          pButton
+          icon="pi pi-times"
+          class="p-button-rounded p-button-danger p-button-text p-button-sm"
+          (click)="removerProduto(pedido.id, item.produto.id)"
           >
-            Remover
-          </button>
-        </div>
-      </li>
-    </ul>
-
-    <div class="footer">
-      <strong> R$:{{ getPedidoTotal(pedido) }}</strong>
-      <p-button
-        label="Item"
-        icon="pi pi-plus"
-        styleClass="p-button-sm p-button-outlined"
-        (click)="abrirModalAdicionar(pedido)"
-      >
-      </p-button>
-    </div>
+          Produto
+        </button>
+      </div>
+    </li>
+  </ul>
+  
+  <div class="footer">
+    <h3> R$:{{ getPedidoTotal(pedido) }} </h3>
+    <p-button
+    label="Item"
+    icon="pi pi-plus"
+    styleClass="p-button-sm p-button-outlined"
+    (click)="abrirModalAdicionar(pedido)"
+    >
+  </p-button>
+  <button
+  pButton
+  icon="pi pi-times"
+  class="p-button-rounded p-button-danger p-button-text p-button-sm"
+  (click)="removerPedido(pedido.id)"
+  >
+  Pedido
+  </button>
+</div>
   </div>
 </div>
 
