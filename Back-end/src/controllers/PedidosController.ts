@@ -50,7 +50,7 @@ class PedidosController {
 
       if (valorProdutos > 1000) {
         return res
-          .status(200)
+          .status(400)
           .json(
             `A soma de itens nao podem ultrapassar R$:1000,00. Total: ${valorProdutos}`,
           );

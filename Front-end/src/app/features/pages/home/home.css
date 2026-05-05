@@ -9,13 +9,13 @@
 .card {
   padding: 40px;
   border-radius: 12px;
-  background-color: rgb(255, 255, 255);
-  box-shadow: 0 4px 20px rgba(51, 51, 51, 0.1);
+  background-color:black;
+  box-shadow: 0 4px 20px rgba(121, 121, 121, 0.1);
   text-align: center;
   text-transform: uppercase;
 }
 .card h1 {
-  color: black;
+  color: white;
 }
 
 .buttons {

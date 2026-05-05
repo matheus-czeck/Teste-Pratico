@@ -8,11 +8,21 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { FormsModule } from '@angular/forms';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-lista-pedidos',
   standalone: true,
-  imports: [CommonModule, CardModule, ButtonModule, DialogModule, MultiSelectModule, FormsModule],
+  imports: [
+    CommonModule,
+    CardModule,
+    ButtonModule,
+    DialogModule,
+    MultiSelectModule,
+    FormsModule,
+    ToastModule,
+  ],
   templateUrl: './lista-pedidos.html',
   styleUrl: './lista-pedidos.css',
 })
@@ -27,6 +37,7 @@ export class ListaPedidos implements OnInit {
   constructor(
     private pedidosService: Pedidos,
     private produtosService: Produtos,
+    private messageService: MessageService,
   ) {}
 
   ngOnInit(): void {
@@ -40,10 +51,19 @@ export class ListaPedidos implements OnInit {
     if (confirm('Tem certeza que deseja excluir este pedido?')) {
       this.pedidosService.deletarPedido(id).subscribe({
         next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Sucesso',
+            detail: 'Pedido removido!',
+          });
           this.carregarPedidos();
         },
-        error: (err) => {
-          console.log(err);
+        error: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: `Falha ao remover pedido.`,
+          });
         },
       });
     }
@@ -52,10 +72,19 @@ export class ListaPedidos implements OnInit {
   removerProduto(pedidoId: number, produtoId: number) {
     this.produtosService.removerProduto(pedidoId, produtoId).subscribe({
       next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: 'Produto removido!',
+        });
         this.carregarPedidos();
       },
-      error: (err) => {
-        console.log(err);
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: `Falha ao remover produto.`,
+        });
       },
     });
   }
@@ -66,35 +95,30 @@ export class ListaPedidos implements OnInit {
     this.produtoIdSelecionado = null;
     this.exibirModal = true;
   }
-  
+
   adicionarProdutos() {
     if (this.pedidoSelecionado && this.produtoIdSelecionado) {
-      const idProduto = Number(this.produtoIdSelecionado)
-      
-
+      const idProduto = Number(this.produtoIdSelecionado);
       console.log(idProduto);
-      this.produtosService.adicionarProduto(this.pedidoSelecionado.id, idProduto ).subscribe({
+      this.produtosService.adicionarProduto(this.pedidoSelecionado.id, idProduto).subscribe({
         next: () => {
-          alert('Produto adicionado com sucesso!');
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Sucesso',
+            detail: 'Pedido adicionado!',
+          });
           this.exibirModal = false;
           this.carregarPedidos();
         },
-        error: (err) => {
-          alert('Erro ao adicionar produtos ao pedido');
+        error: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: `Falha ao adicionar produto`,
+          });
         },
       });
     }
-  }
-  
-  removerPedido(pedidoId: number){
-    this.pedidosService.deletarPedido(pedidoId).subscribe({
-      next: () => {
-        this.carregarPedidos()
-        alert("Pedido removido com sucesso!")
-      },error: (err)=>{
-        alert(err)
-      }
-    })
   }
 
   getPedidoTotal(pedido: any): number {

@@ -1,20 +1,23 @@
+.p-toast {
+  z-index: 1 !important;
+}
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 100px;
-    
 }
 
 .conteudo {
   display: flex;
   flex-direction: column;
-  background-color: white;
+  background-color: black;
   border-radius: 20px;
   gap: 10px;
   padding: 15px;
+  box-shadow: 0 4px 20px rgba(121, 121, 121, 0.1);
 }
 
 label {
-  color: black;
+  color: white;
 }

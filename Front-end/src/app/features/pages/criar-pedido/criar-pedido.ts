@@ -7,11 +7,20 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-criar-pedido',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MultiSelectModule, ButtonModule, InputTextModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MultiSelectModule,
+    ButtonModule,
+    InputTextModule,
+    ToastModule,
+  ],
   templateUrl: './criar-pedido.html',
   styleUrl: './criar-pedido.css',
 })
@@ -23,11 +32,10 @@ export class CriarPedido implements OnInit {
     private produtosService: Produtos,
     private fb: FormBuilder,
     private pedidosService: Pedidos,
-  ) 
-  
-  {
+    private messageService: MessageService,
+  ) {
     this.formulario = this.fb.group({
-      nome: ['', Validators.required],
+      nome: ['', Validators.required, ],
       produtosSelecionados: [[], Validators.required],
     });
   }
@@ -42,15 +50,31 @@ export class CriarPedido implements OnInit {
         nome: this.formulario.value.nome,
         produtos: this.formulario.value.produtosSelecionados,
       };
-      console.log(data, this.formulario)
+      console.log(this.formulario);
+      if (data.produtos.length > 5) {
+        return this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: `Selecione ate 5 itens`,
+        });
+      }
+
       this.pedidosService.criarPedido(data).subscribe({
-        next: (res) => {
-          alert('Pedido Criado com sucesso!');
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Sucesso',
+            detail: 'Pedido criado!',
+          });
           this.formulario.reset();
         },
         error: (err) => {
-          console.log(err)
-          alert('Erro ao criar pedido!');
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: err
+          });
+          
         },
       });
     }

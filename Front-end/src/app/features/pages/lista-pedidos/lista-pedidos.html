@@ -1,82 +1,87 @@
-<div class="container" *ngIf="pedidos$ | async as pedidos; else carregando">
-  <h2>Lista de Pedidos</h2>
-  <div class="card" *ngFor="let pedido of pedidos">
-    <h3>#{{ pedido.id }} - Pedido: {{ pedido.nome }}</h3>
-    
-    <ul>
-      <li *ngFor="let item of pedido.produtos">
-        <div class="produto">
-          {{ item.produto.nome }} - R$ {{ item.produto.preco }}
+<p-toast></p-toast>
+
+<div class="container">
+  @if (pedidos$ | async; as listaDePedidos) {
+    <h2>Lista de Pedidos</h2>
+
+    @for (pedido of listaDePedidos; track pedido.id) {
+      <div class="card">
+        <div class="header">
+          <h3>#{{ pedido.id }} - Pedido: {{ pedido.nome }}</h3>
           <button
-          pButton
-          icon="pi pi-times"
-          class="p-button-rounded p-button-danger p-button-text p-button-sm"
-          (click)="removerProduto(pedido.id, item.produto.id)"
+            pButton
+            icon="pi pi-times"
+            class="p-button-rounded p-button-danger p-button-text p-button-sm"
+            (click)="excluirPedido(pedido.id)"
           >
-          Produto
-        </button>
+            Pedido
+          </button>
+        </div>
+
+        <ul>
+          @for (item of pedido.produtos; track item.id) {
+            <li>
+              <div class="produto">
+                {{ item.produto.nome }} - R$ {{ item.produto.preco }}
+                <button
+                  pButton
+                  icon="pi pi-times"
+                  class="p-button-rounded p-button-danger p-button-text p-button-sm"
+                  (click)="removerProduto(pedido.id, item.produto.id)"
+                >
+                  Produto
+                </button>
+              </div>
+            </li>
+          } @empty {
+            <li>Nenhum produto neste pedido.</li>
+          }
+        </ul>
+
+        <div class="footer">
+          <h3>R$:{{ getPedidoTotal(pedido) }}</h3>
+          <p-button
+            label="Item"
+            icon="pi pi-plus"
+            styleClass="p-button-sm p-button-outlined"
+            (click)="abrirModalAdicionar(pedido)"
+          >
+          </p-button>
+        </div>
       </div>
-    </li>
-  </ul>
-  
-  <div class="footer">
-    <h3> R$:{{ getPedidoTotal(pedido) }} </h3>
-    <p-button
-    label="Item"
-    icon="pi pi-plus"
-    styleClass="p-button-sm p-button-outlined"
-    (click)="abrirModalAdicionar(pedido)"
-    >
-  </p-button>
-  <button
-  pButton
-  icon="pi pi-times"
-  class="p-button-rounded p-button-danger p-button-text p-button-sm"
-  (click)="removerPedido(pedido.id)"
-  >
-  Pedido
-  </button>
-</div>
-  </div>
+    } @empty {
+      <p>Nenhum pedido encontrado.</p>
+    }
+  } @else {
+    <p>Carregando pedidos...</p>
+  }
 </div>
 
-<p-dialog
-  header="Adicionar Produtos"
-  [(visible)]="exibirModal"
-  [modal]="true"
-  [style]="{ width: '50vw' }"
->
-  <div *ngIf="pedidoSelecionado">
-    <strong>{{ pedidoSelecionado.nome }}</strong>
-    <p-multiSelect
-      [options]="(produtos$ | async) || []"
-      [(ngModel)]="produtoIdSelecionado"
-      optionLabel="nome"
-      optionValue="id"
-      placeholder="Selecione um produto"
-      appendTo="body"
-      class="w-full"
-    >
-    </p-multiSelect>
+<p-dialog header="Adicionar Produto" [(visible)]="exibirModal" [modal]="true" class="box-modal">
+  @if (pedidoSelecionado) {
+    <div class="box-main">
+      <strong>{{ pedidoSelecionado.nome }}</strong>
 
-    <div class="flex justify-content-end mt-4 heigth 300px">
-      <p-button 
-      label="Fechar" 
-      (click)="exibirModal = false" 
-      styleClass="p-button-text">
-      </p-button>
-
-      <p-button 
-      label="Adicionar Produto" 
-      icon="pi pi-check" 
-      (click)="adicionarProdutos()"
-      [disabled]="!produtoIdSelecionado"
+      <p-multi-select
+        [options]="(produtos$ | async) || []"
+        [(ngModel)]="produtoIdSelecionado"
+        [selectionLimit]="1"
+        optionLabel="nome"
+        optionValue="id"
+        placeholder="Selecione um produto"
+        appendTo="body"
+        class="select"
       >
-      </p-button>
-    </div>
-  </div>
-</p-dialog>
+      </p-multi-select>
 
-<ng-template #carregando>
-  <p>Carregando pedidos...</p>
-</ng-template>
+      <div class="box-buttons">
+        <p-button
+          label="Adicionar"
+          icon="pi pi-check"
+          (click)="adicionarProdutos()"
+          [disabled]="!produtoIdSelecionado"
+        ></p-button>
+      </div>
+    </div>
+  }
+</p-dialog>
