@@ -1,18 +1,18 @@
-import prisma from "../config/db";
-import { RequestHandler, Request, Response } from "express";
+
+import { NextFunction, Request, Response } from "express";
+import ProdutoService from "../Service/ProdutoService";
 
 export class ProdutosController {
-  static async listarProdutos(req: Request, res: Response) {
+  static async listarProdutos(
+    _req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
-      const todosProdutos = await prisma.produto.findMany();
-
-      if (todosProdutos.length !== 0) {
-        res.status(200).json(todosProdutos);
-      } else {
-        return res.status(404).json("Nao ha produtos cadastrados!");
-      }
+      const produtos = await ProdutoService.encontrarProduto();
+      res.status(200).json(produtos);
     } catch (error) {
-      res.status(500).json(`Ocorreu um erro interno: ${error}`);
+      next(error);
     }
   }
 }
