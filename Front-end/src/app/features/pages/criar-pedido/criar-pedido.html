@@ -5,14 +5,37 @@
     <input pInputText id="nome" formControlName="nome" />
 
     <label>Selecione os Produtos</label>
-    <p-multiSelect
-      [options]="(produtos$ | async) || []"
-      formControlName="produtosSelecionados"
-      optionLabel="nome"
-      optionValue="id"
-      placeholder="Escolha os itens"
-    >
-    </p-multiSelect>
+    @for (produto of (produtos$ | async) || []; track produto.id) {
+      @let estaSelecionado = formulario.get('produtosSelecionados')?.value?.includes(produto.id);
+      @let totalSelecionados = formulario.get('produtosSelecionados')?.value?.length || 0;
+      @let ficaBloqueado = totalSelecionados >= 5 && !estaSelecionado;
+
+      <label
+        [for]="produto.id"
+        class="produtos-box"
+        [class.card-selecionado]="estaSelecionado"
+        [class.card-padrao]="!estaSelecionado && !ficaBloqueado"
+        [class.card-bloqueado]="ficaBloqueado"
+      >
+        <p-checkbox
+          style="display: none"
+          [inputId]="produto.id"
+          [value]="produto.id"
+          [formControl]="$any(formulario.get('produtosSelecionados'))"
+        >
+        </p-checkbox>
+
+        <span>{{ produto.nome }} - Preco:R$:{{ produto.preco }}</span>
+      </label>
+    }
+
     <p-button label="Finalizar Pedido" type="submit" [disabled]="formulario.invalid"></p-button>
+
+    @if (formulario.get('produtosSelecionados')?.hasError('limiteExcedido')) {
+      <small class="text-red-500 flex items-center gap-1 mt-2 font-medium">
+        <i class="pi pi-times-circle"></i>
+        Erro: Você não pode selecionar mais do que 5 produtos.
+      </small>
+    }
   </form>
 </div>

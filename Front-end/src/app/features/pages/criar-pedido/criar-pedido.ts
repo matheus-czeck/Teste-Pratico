@@ -3,12 +3,20 @@ import { Observable } from 'rxjs';
 import { Produtos } from '../../../core/services/produtos';
 import { Pedidos } from '../../../core/services/pedidos';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+  AbstractControl,
+  ValidationErrors,
+} from '@angular/forms';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @Component({
   selector: 'app-criar-pedido',
@@ -20,6 +28,7 @@ import { MessageService } from 'primeng/api';
     ButtonModule,
     InputTextModule,
     ToastModule,
+    CheckboxModule,
   ],
   templateUrl: './criar-pedido.html',
   styleUrl: './criar-pedido.css',
@@ -35,13 +44,23 @@ export class CriarPedido implements OnInit {
     private messageService: MessageService,
   ) {
     this.formulario = this.fb.group({
-      nome: ['', Validators.required, ],
-      produtosSelecionados: [[], Validators.required],
+      nome: ['', Validators.required],
+      produtosSelecionados: [[], [Validators.required, this.limiteMaximoProdutos(5)]],
     });
   }
 
   ngOnInit(): void {
     this.produtos$ = this.produtosService.buscarProdutos();
+  }
+
+  limiteMaximoProdutos(max: number) {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const valor = control.value;
+      if (valor && valor.length > max) {
+        return { limiteExcedido: { max, atual: valor.length } };
+      }
+      return null
+    };
   }
 
   criarPedido() {
@@ -72,9 +91,8 @@ export class CriarPedido implements OnInit {
           this.messageService.add({
             severity: 'error',
             summary: 'Erro',
-            detail: err
+            detail: err.error.message,
           });
-          
         },
       });
     }
