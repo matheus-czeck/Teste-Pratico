@@ -53,4 +53,7 @@
 label {
   color: white;
 }
+span {
+text-transform: uppercase;
+}
 
