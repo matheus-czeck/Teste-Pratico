@@ -1,0 +1,25 @@
+@for (produto of produtos || []; track produto.id) {
+  @let estaSelecionado = formControlSelecionados.value?.includes(produto.id);
+  @let totalSelecionados = formControlSelecionados.value?.length || 0;
+  @let ficaBloqueado = totalSelecionados >= 5 && !estaSelecionado;
+
+  <label
+    [for]="produto.id"
+    class="produtos-box"
+    [class.card-selecionado]="estaSelecionado"
+    [class.card-padrao]="!estaSelecionado && !ficaBloqueado"
+    [class.card-bloqueado]="ficaBloqueado"
+  >
+    <p-checkbox
+      style="display: none"
+      [inputId]="produto.id"
+      [value]="produto.id"
+      [formControl]="formControlSelecionados"
+    >
+    </p-checkbox>
+
+    <span>{{ produto.nome }} - Preco:R$:{{ produto.preco }}</span>
+  </label>
+} @empty {
+<p> Nenhum produto recebido</p>
+}

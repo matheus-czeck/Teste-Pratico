@@ -1,0 +1,43 @@
+.p-toast {
+  z-index: 1 !important;
+}
+
+.produtos-box {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  margin-bottom: .5rem;
+  transition: all 0.2s ease;
+}
+
+
+.produtos-box.card-padrao:hover {
+  background-color:  rgb(29, 29, 29);
+  border-color: #cbd5e1;
+  cursor: pointer;
+}
+
+.produtos-box.card-selecionado {
+  background-color: rgb(29, 29, 29);
+  border-color: rgba(160, 241, 160, 0.699);
+  box-shadow: 0 0 5px 1px rgba(160, 241, 160, 0.699);
+  cursor: pointer;
+}
+
+
+.produtos-box.card-bloqueado {
+  border-color: #f1f5f9;
+  cursor: default !important;
+  opacity: 0.6;
+
+}
+
+label {
+  color: white;
+}
+span {
+text-transform: uppercase;
+}
+

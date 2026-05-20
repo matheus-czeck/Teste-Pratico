@@ -3,20 +3,15 @@ import { Observable } from 'rxjs';
 import { Produtos } from '../../../core/services/produtos';
 import { Pedidos } from '../../../core/services/pedidos';
 import { CommonModule } from '@angular/common';
-import {
-  ReactiveFormsModule,
-  FormBuilder,
-  FormGroup,
-  Validators,
-  AbstractControl,
-  ValidationErrors,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { CheckboxModule } from 'primeng/checkbox';
+import { ListaProdutos } from '../../../component/lista-produtos/lista-produtos';
+
 
 @Component({
   selector: 'app-criar-pedido',
@@ -29,38 +24,29 @@ import { CheckboxModule } from 'primeng/checkbox';
     InputTextModule,
     ToastModule,
     CheckboxModule,
+    ListaProdutos,
   ],
   templateUrl: './criar-pedido.html',
   styleUrl: './criar-pedido.css',
 })
 export class CriarPedido implements OnInit {
   produtos$!: Observable<any[]>;
-  formulario: FormGroup;
+  formulario!: FormGroup;
 
   constructor(
     private produtosService: Produtos,
-    private fb: FormBuilder,
     private pedidosService: Pedidos,
     private messageService: MessageService,
+    private fb: FormBuilder
   ) {
     this.formulario = this.fb.group({
       nome: ['', Validators.required],
-      produtosSelecionados: [[], [Validators.required, this.limiteMaximoProdutos(5)]],
-    });
+      produtosSelecionados: [[], [Validators.required, Validators.maxLength(5)]]
+    })
   }
 
   ngOnInit(): void {
     this.produtos$ = this.produtosService.buscarProdutos();
-  }
-
-  limiteMaximoProdutos(max: number) {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const valor = control.value;
-      if (valor && valor.length > max) {
-        return { limiteExcedido: { max, atual: valor.length } };
-      }
-      return null
-    };
   }
 
   criarPedido() {
