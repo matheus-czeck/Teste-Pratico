@@ -62,24 +62,16 @@
     <div class="box-main">
       <strong>{{ pedidoSelecionado.nome }}</strong>
 
-      <p-multi-select
-        [options]="(produtos$ | async) || []"
-        [(ngModel)]="produtoIdSelecionado"
-        [selectionLimit]="1"
-        optionLabel="nome"
-        optionValue="id"
-        placeholder="Selecione um produto"
-        appendTo="body"
-        class="select"
-      >
-      </p-multi-select>
-
+      <app-lista-produtos
+        [produtos]="produtos$ | async"
+        [control]="controleProdutos"
+      ></app-lista-produtos>
       <div class="box-buttons">
         <p-button
           label="Adicionar"
           icon="pi pi-check"
           (click)="adicionarProdutos()"
-          [disabled]="!produtoIdSelecionado"
+          [disabled]="!(controleProdutos.value && controleProdutos.value.length > 0)"
         ></p-button>
       </div>
     </div>

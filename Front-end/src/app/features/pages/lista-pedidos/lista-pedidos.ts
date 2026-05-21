@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, input, OnInit } from '@angular/core';
 import { Pedidos } from '../../../core/services/pedidos';
 import { Produtos } from '../../../core/services/produtos';
 import { CommonModule } from '@angular/common';
@@ -7,9 +7,10 @@ import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { ListaProdutos } from "../../../component/lista-produtos/lista-produtos";
 
 @Component({
   selector: 'app-lista-pedidos',
@@ -22,7 +23,8 @@ import { MessageService } from 'primeng/api';
     MultiSelectModule,
     FormsModule,
     ToastModule,
-  ],
+    ListaProdutos
+],
   templateUrl: './lista-pedidos.html',
   styleUrl: './lista-pedidos.css',
 })
@@ -32,7 +34,7 @@ export class ListaPedidos implements OnInit {
 
   exibirModal: boolean = false;
   pedidoSelecionado: any;
-  produtoIdSelecionado: number | null = null;
+  controleProdutos =  new FormControl<number[]>([])
 
   constructor(
     private pedidosService: Pedidos,
@@ -92,14 +94,19 @@ export class ListaPedidos implements OnInit {
   abrirModalAdicionar(pedido: any) {
     this.produtos$ = this.produtosService.buscarProdutos();
     this.pedidoSelecionado = pedido;
-    this.produtoIdSelecionado = null;
+    this.controleProdutos.setValue([])
     this.exibirModal = true;
   }
 
   adicionarProdutos() {
-    if (this.pedidoSelecionado && this.produtoIdSelecionado) {
-      const idProduto = Number(this.produtoIdSelecionado);
-      console.log(idProduto);
+const selecionados = this.controleProdutos.value || []
+
+console.log(selecionados)
+
+
+    if (this.pedidoSelecionado && selecionados.length > 0) {
+      const idProduto = Number(selecionados[selecionados.length - 1 ]);
+      
       this.produtosService.adicionarProduto(this.pedidoSelecionado.id, idProduto).subscribe({
         next: () => {
           this.messageService.add({

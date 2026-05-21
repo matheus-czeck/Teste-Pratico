@@ -23,11 +23,18 @@ class ProdutoPedidoController {
     const pedidoId = Number(req.params.id);
     const produtoId = req.body.produtoId;
     try {
-      const adicionarProduto = await PedidoProdutoService.adicionarProduto(
-        pedidoId,
-        produtoId,
-      );
-      res
+
+      let tamanhoArray = produtoId.length
+
+      while(tamanhoArray < produtoId.lenght ){
+
+        await PedidoProdutoService.adicionarProduto(
+          pedidoId,
+          produtoId = produtoId[tamanhoArray],
+        );
+        
+      }
+        res
         .status(201)
         .send(`Produto: "${adicionarProduto}" adicionado com sucesso!`);
     } catch (error) {

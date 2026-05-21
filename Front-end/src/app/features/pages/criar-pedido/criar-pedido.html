@@ -6,10 +6,11 @@
 
     <label>Selecione os Produtos</label>
    
-      <app-lista-produtos>
+      <app-lista-produtos
         [produtos]="(produtos$ | async)"
         [control]="formulario.get('produtosSelecionados')"
-      </app-lista-produtos>
+        ></app-lista-produtos>
+    
 
     <p-button label="Finalizar Pedido" type="submit" [disabled]="formulario.invalid"></p-button>
 
